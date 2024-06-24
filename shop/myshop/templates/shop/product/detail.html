@@ -1,0 +1,102 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}
+  {{ product.name }}
+{% endblock %}
+
+{% block content %}
+<div id="sidebar">
+    {% load static %}
+    <div class = "header_logo">
+        <img class="company-img" src="{% static 'img/logon.svg' %}" alt="Логотип {{ company_name }}">
+    </div>
+
+        <div class="header-right">
+            <a class="btn-header" href="{% url 'shop:index' %}">
+               <button class="main-btn">Главная</button><img class="img-home" src="{% static 'img/home.png' %}">
+            </a>
+
+
+            <div class="dropdown">
+
+                <a class="btn-header" href="{% url 'shop:product_list' %}" {% if not category %}class="selected"{% endif %}>
+                    <button class="dropbtn">Каталог</button><img class="img-burger" src="{% static 'img/burger.svg' %}">
+                </a>
+                <div class="dropdown-content">
+                    {% for c in categories %}
+                        <a href="{{ c.get_absolute_url }}" {% if category.slug == c.slug %}class="selected" {% endif %}>{{ c.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+                <div class="cart">
+                    {% with total_items=cart|length %}
+                    {% if cart|length > 0 %}
+                    <a href="{% url 'cart:cart_detail' %}"><img class="img-trash" src="{% static 'img/trash.svg' %}">:</a>
+                    <a class = "total_item" href="{% url 'cart:cart_detail' %}">
+                        {{total_items}}шт, ₽{{cart.get_total_price}}
+                    </a>
+                    {%else%}
+                    <img class="img-trash" src="{% static 'img/trash.svg' %}">
+                    {%endif%}
+                    {%endwith%}
+                </div>
+        </div>
+</div>
+
+
+
+  <div class="product-detail">
+    <div class="product_detail_titles">
+    <img class="product-image" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+      <div class="product_detail_info">
+    <h1 class="product-name">{{ product.name }}</h1>
+    <div class="product-category-price">
+        <div class="product-category">
+            <p class="product-category-title">Категория: </p>
+          <a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a>
+        </div>
+            <div class = "product_price">
+                <p class="product_price-title">Цена: </p>
+                <p class="price">₽{{ product.price }}</p>
+              </div>
+    </div>
+        <div class = "form_styles">
+    <form action="{% url 'cart:cart_add' product.id %}" method="post" class="add-to-cart-form">
+      {{ cart_product_form }}
+      {% csrf_token %}
+      <input type="submit" value="Добавить в корзину" class="add-to-cart-button">
+      </div>
+    </form>
+        </div>
+    </div>
+    <div class = "product_title">
+    <p class="product-description">{{ product.description|linebreaks }}</p>
+      </div>
+  </div>
+
+<div class="footer">
+    <div class="footer-container">
+        <div class="logo">
+             <img class="footer-img" src="{% static 'img/kniga3.jpg' %}" alt="Логотип {{ company_name }}">
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-info">
+                <p class="footer-info-upper">Книги которые вы точно запомните!</p>
+                <p class="footer-info-bottom">"Чтение — это путешествие, которое можно начать в любое время и в любом месте, открывая перед собой бесконечные миры и бесценные знания."</p>
+            </div>
+            <div class="footer-bottom">
+                <div class="visa">
+                    <img src="{% static 'img/Group23.png' %}" alt="Логотип {{ company_name }}">
+                </div>
+                <div class="footer-right">
+                    <p>Содержимое не является публичной офертой</p>
+                    <a class="footer-under">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

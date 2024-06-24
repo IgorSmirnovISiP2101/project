@@ -1,0 +1,111 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}
+  Корзина покупок
+{% endblock %}
+
+{% block content %}
+
+<div id="sidebar">
+    {% load static %}
+    <div class = "header_logo">
+        <img class="company-img" src="{% static 'img/logon.svg' %}" alt="Логотип {{ company_name }}">
+    </div>
+
+        <div class="header-right">
+            <a class="btn-header" href="{% url 'shop:index' %}">
+               <button class="main-btn">Главная</button><img class="img-home" src="{% static 'img/home.png' %}">
+            </a>
+
+
+            <div class="dropdown">
+
+                <a class="btn-header" href="{% url 'shop:product_list' %}" {% if not category %}class="selected"{% endif %}>
+                    <button class="dropbtn">Каталог</button><img class="img-burger" src="{% static 'img/burger.svg' %}">
+                </a>
+                <div class="dropdown-content">
+                    {% for c in categories %}
+                        <a href="{{ c.get_absolute_url }}" {% if category.slug == c.slug %}class="selected" {% endif %}>{{ c.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+                <div class="cart">
+                    {% with total_items=cart|length %}
+                    {% if cart|length > 0 %}
+                    <a href="{% url 'cart:cart_detail' %}"><img class="img-trash" src="{% static 'img/trash.svg' %}">:</a>
+                    <a class = "total_item" href="{% url 'cart:cart_detail' %}">
+                        {{total_items}}шт, ₽{{cart.get_total_price}}
+                    </a>
+                    {%else%}
+                    <img class="img-trash" src="{% static 'img/trash.svg' %}">
+                    {%endif%}
+                    {%endwith%}
+                </div>
+        </div>
+</div>
+
+
+  <div class = "container_for_trash">
+  <h1>Корзина покупок</h1>
+
+      <h4 class="title-contact">Напиши ваши контакты и мы свяжимся с вами</h4>
+      <form class="box-contact">
+          <input type="email" placeholder="Ваш email">
+          <input type="tel" placeholder="Ваш номер телефона">
+          <input type="submit" value="Оформить заказ">
+      </form>
+  <table class="trash">
+    <thead>
+      <tr>
+        <th>Картинка</th>
+        <th>Товар</th>
+        <th>Обновить кол-во</th>
+        <th>Удалить</th>
+        <th>Кол-во</th>
+        <th>Цена за шт</th>
+        <th>Общая стоимость</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart %}
+        {% with product=item.product %}
+          <tr>
+            <td>
+              <a href="{{ product.get_absolute_url }}">
+                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}">
+              </a>
+            </td>
+            <td>{{ product.name }}</td>
+            <td>
+              <form class="td-form" action="{% if product.id %}{% url 'cart:cart_add' product.id %}{% endif %}" method="post">
+                {{ item.update_quantity_form.quantity }}
+                {{ item.update_quantity_form.update }}
+                <input type="submit" value="Обновить">
+                {% csrf_token %}
+              </form>
+            </td>
+            <td><a class="delete" href="{% if product.id %}{% url 'cart:cart_remove' product.id %}{% endif %}">Удалить</a></td>
+            <td>
+              {{ item.quantity }}
+            </td>
+            <td class="num">₽{{ item.price }}</td>
+            <td class="num">₽{{ item.total_price }}</td>
+          </tr>
+        {% endwith %}
+      {% endfor %}
+      <tr class="total">
+        <td>Всего</td>
+        <td colspan="5"></td>
+        <td class="num">₽{{ cart.get_total_price }}</td>
+      </tr>
+    </tbody>
+  </table>
+    </div>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% block title %}
+{% if category %}{{ category.name }}{% else %}Товары{% endif %}
+
+{% endblock %}
+
+{% block content %}
+  <div id="sidebar">
+    {% load static %}
+    <div class = "header_logo">
+        <img class="company-img" src="{% static 'img/logon.svg' %}" alt="Логотип {{ company_name }}">
+    </div>
+
+        <div class="header-right">
+            <a class="btn-header" href="{% url 'shop:index' %}">
+               <button class="main-btn">Главная</button><img class="img-home" src="{% static 'img/home.png' %}">
+            </a>
+
+
+            <div class="dropdown">
+
+                <a class="btn-header" href="{% url 'shop:product_list' %}" {% if not category %}class="selected"{% endif %}>
+                    <button class="dropbtn">Каталог</button><img class="img-burger" src="{% static 'img/burger.svg' %}">
+                </a>
+                <div class="dropdown-content">
+                    {% for c in categories %}
+                        <a href="{{ c.get_absolute_url }}" {% if category.slug == c.slug %}class="selected" {% endif %}>{{ c.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+                <div class="cart">
+                    {% with total_items=cart|length %}
+                    {% if cart|length > 0 %}
+                    <a href="{% url 'cart:cart_detail' %}"><img class="img-trash" src="{% static 'img/trash.svg' %}">:</a>
+                    <a class = "total_item" href="{% url 'cart:cart_detail' %}">
+                        {{total_items}}шт, ₽{{cart.get_total_price}}
+                    </a>
+                    {%else%}
+                    <img class="img-trash" src="{% static 'img/trash.svg' %}">
+                    {%endif%}
+                    {%endwith%}
+                </div>
+        </div>
+</div>
+
+        <div class = "container_for_titles">
+                <h1 class="title_for_items">{% if category %}{{ category.name }}{% else %}Весь ассортимент товаров{% endif %}</h1>
+                <div id="main" class="product-list">
+                {% for product in products %}
+                    <div class="container_for_items">
+                        <div class="background_for_items">
+                        <a href="{{ product.get_absolute_url }}">
+                            <img src="{% if product.image %}{{ product.image.url }}{%else %}{% static 'img/no_image.png' %}{% endif %}" alt="{{ product.name }}">
+                        </a>
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        <a class="container_for_items-price" href="{{ product.get_absolute_url }}">Цена : ₽ {{ product.price }}</a>
+                            </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+<div class="footer">
+    <div class="footer-container">
+        <div class="logo">
+             <img class="footer-img" src="{% static 'img/kniga3.jpg' %}" alt="Логотип {{ company_name }}">
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-info">
+                <p class="footer-info-upper">Книги которые вы точно запомните!</p>
+                <p class="footer-info-bottom">"Чтение — это путешествие, которое можно начать в любое время и в любом месте, открывая перед собой бесконечные миры и бесценные знания."</p>
+            </div>
+            <div class="footer-bottom">
+                <div class="visa">
+                    <img src="{% static 'img/Group23.png' %}" alt="Логотип {{ company_name }}">
+                </div>
+                <div class="footer-right">
+                    <p>Содержимое не является публичной офертой</p>
+                    <a class="footer-under">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
